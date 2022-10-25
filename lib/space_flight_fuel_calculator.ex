@@ -1,18 +1,23 @@
 defmodule SpaceFlightFuelCalculator do
-  def calculate(spacecraft_weight, [{flight_directive, acceleration_due_to_gravity}]) do
-    next_fuel_weight =
-      get_fuel_weight(
-        spacecraft_weight,
-        flight_directive,
-        acceleration_due_to_gravity
-      )
+  def calculate(spacecraft_weight, flights) do
+    flights
+    |> Enum.reverse()
+    |> Enum.reduce(0, fn {flight_directive, acceleration_due_to_gravity}, total_fuel_weight ->
+      next_fuel_weight =
+        get_fuel_weight(
+          spacecraft_weight + total_fuel_weight,
+          flight_directive,
+          acceleration_due_to_gravity
+        )
 
-      calculate_for_fuel_weight(
-        flight_directive,
-        acceleration_due_to_gravity,
-        0,
-        next_fuel_weight
-      )
+      total_fuel_weight +
+        calculate_for_fuel_weight(
+          flight_directive,
+          acceleration_due_to_gravity,
+          0,
+          next_fuel_weight
+        )
+    end)
   end
 
   def calculate_for_fuel_weight(
