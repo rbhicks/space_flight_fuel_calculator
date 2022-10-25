@@ -1,8 +1,7 @@
 defmodule SpaceFlightFuelCalculatorTest do
   use ExUnit.Case
-  doctest SpaceFlightFuelCalculator
 
-  test "greets the world" do
-    assert SpaceFlightFuelCalculator.hello() == :world
+  test "land Apollo 11 CSM on Earth" do
+    assert SpaceFlightFuelCalculator.calculate(28801, [{:land, 9.807}]) == 13447
   end
 end
