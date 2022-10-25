@@ -147,14 +147,18 @@ defmodule SpaceFlightFuelCalculator do
     result
   end
 
+  # can't start a multi flight mission with a landing
   defp validate_mission([{:land, _} | _tail_flights]), do: false
 
+  # can't have two flight directives of the same type consecutively
   defp valid_mission?(last_flight_directive, last_flight_directive, _gravity, _last_gravity),
     do: false
 
+  # can't have a launch follow a landing where the gravity isn't the same
   defp valid_mission?(:land, :launch, gravity, last_gravity) when gravity != last_gravity,
     do: false
 
+  # we didn't find a failure above, the mission should be valid
   defp valid_mission?(_last_flight_directive, _flight_directive, _gravity, _last_gravity),
     do: true
 end
