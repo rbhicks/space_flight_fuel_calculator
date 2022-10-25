@@ -48,4 +48,22 @@ defmodule SpaceFlightFuelCalculatorTest do
              {:land, 9.807}
            ]) == 212_161
   end
+
+  test "Failure: Consecutive Launches" do
+    "Consecutive launches will fail with nil..." |> IO.puts()
+
+    assert SpaceFlightFuelCalculator.calculate(75432, [
+             {:launch, 9.807},
+             {:launch, 9.807}
+           ]) == nil
+  end
+
+  test "Failure: Inconsistent Gravity" do
+    "Mismatched gravity on a launch after a landing will fail with nil..." |> IO.puts()
+
+    assert SpaceFlightFuelCalculator.calculate(75432, [
+             {:land, 9.807},
+             {:launch, 3.711}
+           ]) == nil
+  end
 end
