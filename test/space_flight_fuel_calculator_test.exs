@@ -1,4 +1,11 @@
 defmodule SpaceFlightFuelCalculatorTest do
+  @moduledoc """
+  The first test function is for a single flight. It
+  was put into place to test the base fuel calculation
+  algorithm. The subsequent tests are taken from the
+  test description.
+  """
+
   use ExUnit.Case
 
   test "land Apollo 11 CSM on Earth" do
