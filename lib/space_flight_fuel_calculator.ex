@@ -1,42 +1,13 @@
 defmodule SpaceFlightFuelCalculator do
   @moduledoc """
   Functions for calculating the fuel weight for space flights.
-  There is a single entry point, calculate/2. The functions
-  for making the calculations, calculate_for_fuel_weight/4,
+  There is a single enternal entry point, calculate/2. The
+  functions for making the calculations, calculate_for_fuel_weight/4,
   are tail recursive and behave similarly to Enum.reduce.
   This method is preferred over Enum.reduce for clarity.
 
-  calculate_for_fuel_weight/4 is described here as private
-  functions can't have doc strings:
-
-  These are tail recursive functions that calculate the
-  fuel weight for a single flight. The functios are called
-  based on the algorithm described in the test documentation;
-  i.e., fuel is repeatedly calculated based on current weight
-  and the weight of the fuel until the fuel weight is either
-  0 or negative. This is based on the incoming parameter
-  'last_fuel_weight'. This is done so that pattern matching
-  can be used instead of internal conditionals to check
-  when the fuel weight is 0 or negative. N.B., we only have
-  function heads for the two expected cases, i.e., positive
-  or 0 or negative 'last_fuel_weight'. It shouldn't be
-  possible for another situation to arise. If so, it's
-  truly exceptional and will fail loudly in accordance with
-  the elixir practice of "assertive code".
-
-  get_fuel_weight/4 is described here as private
-  functions can't have doc strings:
-
-  This function exists to break out the actual fuel
-  calculation so it doesn't have to be repeated.
-
-  It calls:
-  'get_flight_directive_multiplier/1'
-  'get_flight_directive_minuend/1'
-
-  In order to have a single calculation for both launch and
-  landing. The called functions abstract the calculation
-  constants.
+  As private functions can't have @doc strings, there are
+  explanatory comments in front of the primary functions.
   """
 
   @doc """
@@ -88,6 +59,20 @@ defmodule SpaceFlightFuelCalculator do
     end)
   end
 
+  # These are tail recursive functions that calculate the
+  # fuel weight for a single flight. The functios are called
+  # based on the algorithm described in the test documentation;
+  # i.e., fuel is repeatedly calculated based on current weight
+  # and the weight of the fuel until the fuel weight is either
+  # 0 or negative. This is based on the incoming parameter
+  # 'last_fuel_weight'. This is done so that pattern matching
+  # can be used instead of internal conditionals to check
+  # when the fuel weight is 0 or negative. N.B., we only have
+  # function heads for the two expected cases, i.e., positive
+  # or 0 or negative 'last_fuel_weight'. It shouldn't be
+  # possible for another situation to arise. If so, it's
+  # truly exceptional and will fail loudly in accordance with
+  # the elixir practice of "assertive code".
   defp calculate_for_fuel_weight(
          flight_directive,
          acceleration_due_to_gravity,
@@ -116,6 +101,16 @@ defmodule SpaceFlightFuelCalculator do
     total_fuel_weight
   end
 
+  # This function exists to break out the actual fuel
+  # calculation so it doesn't have to be repeated.
+
+  # It calls:
+  # 'get_flight_directive_multiplier/1'
+  # 'get_flight_directive_minuend/1'
+
+  # In order to have a single calculation for both launch and
+  # landing. The called functions abstract the calculation
+  # constants.
   defp get_fuel_weight(weight, flight_directive, acceleration_due_to_gravity) do
     (weight * acceleration_due_to_gravity * get_flight_directive_multiplier(flight_directive) -
        get_flight_directive_minuend(flight_directive))
