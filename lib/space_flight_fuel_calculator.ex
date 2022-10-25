@@ -39,7 +39,7 @@ defmodule SpaceFlightFuelCalculator do
   constants.
   """
 
-  @docstring """
+  @doc """
   This is the entry point that takes params as defined in
   the test description. Since we want a total for 1 to
   some number of flights, we use Enum.reduce. The most
