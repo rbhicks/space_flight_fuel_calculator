@@ -40,23 +40,34 @@ defmodule SpaceFlightFuelCalculator do
   """
 
   @doc """
-  This is the entry point that takes params as defined in
-  the test description. Since we want a total for 1 to
-  some number of flights, we use Enum.reduce. The most
-  intersting, and needed, part is the call to Enum.reverse.
-  This is critical to perform the weight calculations
-  correctly since for multiple flights fuel is burned.
-  This means that to launch after a landing the weight
-  calculation can't include the weight of the fuel that
-  was used to launch and land at that destination. As
-  such, we have to calculate the flights backwards.
-  This way the weight calculations can start with the
-  spacecraft weight and the weight of the fuel for the
-  last flight, then we simply add the weights from flights
-  that came previously. This keeps the calculation simple
-  is that all that needs to be done is addition.
+  This is the main external entry point. It validates
+  that the mission makes sense and then starts the
+  fuel calculation process.
   """
   def calculate(spacecraft_weight, flights) do
+    if validate_mission(flights) do
+      do_calculate(spacecraft_weight, flights)
+    else
+      nil
+    end
+  end
+
+  # This is main internal entry point that takes params as
+  # defined in the test description. Since we want a total
+  # for 1 to some number of flights, we use Enum.reduce. The
+  # most intersting, and needed, part is the call to Enum.reverse.
+  # This is critical to perform the weight calculations
+  # correctly since for multiple flights fuel is burned.
+  # This means that to launch after a landing the weight
+  # calculation can't include the weight of the fuel that
+  # was used to launch and land at that destination. As
+  # such, we have to calculate the flights backwards.
+  # This way the weight calculations can start with the
+  # spacecraft weight and the weight of the fuel for the
+  # last flight, then we simply add the weights from flights
+  # that came previously. This keeps the calculation simple
+  # is that all that needs to be done is addition.
+  defp do_calculate(spacecraft_weight, flights) do
     flights
     |> Enum.reverse()
     |> Enum.reduce(0, fn {flight_directive, acceleration_due_to_gravity}, total_fuel_weight ->
@@ -115,4 +126,40 @@ defmodule SpaceFlightFuelCalculator do
   defp get_flight_directive_multiplier(:land), do: 0.033
   defp get_flight_directive_minuend(:launch), do: 33
   defp get_flight_directive_minuend(:land), do: 42
+
+  # We need to verify that missions make sense. If
+  # they don't the fuel calculation won't make sense
+  # either. Single flight missions are defined as
+  # always being fine. However, multiple flight
+  # missions need to alternate between landings
+  # and launches. Also, if a landing is followed
+  # by a launch, the gravity must be the same.
+  # Lastly, a multiple flight mission must begin
+  # with a launch.
+  defp validate_mission([_head | []]), do: true
+
+  defp validate_mission([{:launch, _} | _tail_flights] = flights) do
+    {_, _, result} =
+      Enum.reduce_while(flights, {nil, nil, true}, fn {flight_directive, gravity},
+                                                      {last_flight_directive, last_gravity, _} ->
+        if valid_mission?(last_flight_directive, flight_directive, gravity, last_gravity) do
+          {:cont, {flight_directive, gravity, true}}
+        else
+          {:halt, {flight_directive, gravity, false}}
+        end
+      end)
+
+    result
+  end
+
+  defp validate_mission([{:land, _} | _tail_flights]), do: false
+
+  defp valid_mission?(last_flight_directive, last_flight_directive, _gravity, _last_gravity),
+    do: false
+
+  defp valid_mission?(:land, :launch, gravity, last_gravity) when gravity != last_gravity,
+    do: false
+
+  defp valid_mission?(_last_flight_directive, _flight_directive, _gravity, _last_gravity),
+    do: true
 end
