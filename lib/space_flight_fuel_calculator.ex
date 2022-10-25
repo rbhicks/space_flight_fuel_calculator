@@ -60,7 +60,7 @@ defmodule SpaceFlightFuelCalculator do
     flights
     |> Enum.reverse()
     |> Enum.reduce(0, fn {flight_directive, acceleration_due_to_gravity}, total_fuel_weight ->
-      next_fuel_weight =
+      current_fuel_weight =
         get_fuel_weight(
           spacecraft_weight + total_fuel_weight,
           flight_directive,
@@ -72,7 +72,7 @@ defmodule SpaceFlightFuelCalculator do
           flight_directive,
           acceleration_due_to_gravity,
           0,
-          next_fuel_weight
+          current_fuel_weight
         )
     end)
   end
@@ -84,14 +84,14 @@ defmodule SpaceFlightFuelCalculator do
          last_fuel_weight
        )
        when last_fuel_weight > 0 do
-    next_fuel_weight =
+    current_fuel_weight =
       get_fuel_weight(last_fuel_weight, flight_directive, acceleration_due_to_gravity)
 
     calculate_for_fuel_weight(
       flight_directive,
       acceleration_due_to_gravity,
       total_fuel_weight + last_fuel_weight,
-      next_fuel_weight
+      current_fuel_weight
     )
   end
 
