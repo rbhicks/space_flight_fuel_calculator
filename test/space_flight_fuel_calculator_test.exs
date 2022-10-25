@@ -49,6 +49,15 @@ defmodule SpaceFlightFuelCalculatorTest do
            ]) == 212_161
   end
 
+  test "Failure: Consecutive Landings" do
+    "Consecutive landings will fail with nil..." |> IO.puts()
+
+    assert SpaceFlightFuelCalculator.calculate(75432, [
+             {:land, 9.807},
+             {:land, 9.807}
+           ]) == nil
+  end
+
   test "Failure: Consecutive Launches" do
     "Consecutive launches will fail with nil..." |> IO.puts()
 
@@ -62,8 +71,18 @@ defmodule SpaceFlightFuelCalculatorTest do
     "Mismatched gravity on a launch after a landing will fail with nil..." |> IO.puts()
 
     assert SpaceFlightFuelCalculator.calculate(75432, [
+             {:launch, 3.711},
              {:land, 9.807},
              {:launch, 3.711}
+           ]) == nil
+  end
+
+  test "Failure: Mission Begining with a Landing" do
+    "Multi flight missions begining with a landing will fail with nil..." |> IO.puts()
+
+    assert SpaceFlightFuelCalculator.calculate(75432, [
+             {:land, 9.807},
+             {:launch, 9.807}
            ]) == nil
   end
 end
