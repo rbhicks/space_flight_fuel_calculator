@@ -3,7 +3,8 @@ defmodule SpaceFlightFuelCalculatorTest do
   The first test function is for a single flight. It
   was put into place to test the base fuel calculation
   algorithm. The subsequent tests are taken from the
-  test description.
+  test description and my assumptions regarding valid
+  missions.
   """
 
   use ExUnit.Case
