@@ -137,7 +137,7 @@ defmodule SpaceFlightFuelCalculator do
     {_, _, result} =
       Enum.reduce_while(flights, {nil, nil, true}, fn {flight_directive, gravity},
                                                       {last_flight_directive, last_gravity, _} ->
-        if valid_mission?(last_flight_directive, flight_directive, gravity, last_gravity) do
+        if valid_mission?(last_flight_directive, flight_directive, last_gravity, gravity) do
           {:cont, {flight_directive, gravity, true}}
         else
           {:halt, {flight_directive, gravity, false}}
@@ -151,14 +151,14 @@ defmodule SpaceFlightFuelCalculator do
   defp validate_mission([{:land, _} | _tail_flights]), do: false
 
   # can't have two flight directives of the same type consecutively
-  defp valid_mission?(last_flight_directive, last_flight_directive, _gravity, _last_gravity),
+  defp valid_mission?(last_flight_directive, last_flight_directive, _last_gravity, _gravity),
     do: false
 
   # can't have a launch follow a landing where the gravity isn't the same
-  defp valid_mission?(:land, :launch, gravity, last_gravity) when gravity != last_gravity,
+  defp valid_mission?(:land, :launch, last_gravity, gravity) when gravity != last_gravity,
     do: false
 
   # we didn't find a failure above, the mission should be valid
-  defp valid_mission?(_last_flight_directive, _flight_directive, _gravity, _last_gravity),
+  defp valid_mission?(_last_flight_directive, _flight_directive, _last_gravity, _gravity),
     do: true
 end
